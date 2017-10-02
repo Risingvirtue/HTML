@@ -1,0 +1,5 @@
+html, body, h1, h2, h3, ul, li, a, p, article,
+aside, footer, header, main, nav, section, div {
+	padding: 0;
+	margin: 0;
+}
