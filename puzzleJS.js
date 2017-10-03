@@ -4,8 +4,10 @@ var audio1 = new Audio("https://www.soundjay.com/button/beep-05.wav");
 var audio2 = new Audio("https://www.soundjay.com/button/button-37.wav");
 var correctPieces = 0;
 var image = new Image();
+
+var link = prompt("Please link a picture!", "https://www.dailydot.com/wp-content/uploads/404/8a/efff4a1173921308b0a7f072412382b0.jpg")
 image.onload = start;
-image.src = "https://www.dailydot.com/wp-content/uploads/404/8a/efff4a1173921308b0a7f072412382b0.jpg";
+image.src = link;
 ctx.canvas.width = image.width;
 ctx.canvas.height = image.height;
 
@@ -89,24 +91,11 @@ canvas.addEventListener('click', function(e) {
 		canvas.selected = pieces[currPos];
 		var dx = canvas.selected.row * pieceWidth;
 		var dy = canvas.selected.col * pieceHeight;
-		/*
-		ctx.clearRect(canvas.selected.row * pieceWidth,
-									canvas.selected.col * pieceHeight,
-									pieceWidth, pieceHeight)
-									*/
 		ctx.strokeStyle = '#FD0';
 		ctx.strokeRect(x * pieceWidth + 1, y * pieceHeight + 1, pieceWidth - 2 , pieceHeight - 2);
 	} else {
 		canvas.clicked = !canvas.clicked;
 		if (canvas.selected == pieces[currPos]) {
-			/*
-				var dx = canvas.selected.row * pieceWidth;
-				var dy = canvas.selected.col * pieceHeight;
-				ctx.drawImage(image, dx, dy, pieceWidth, pieceHeight,
-											x*pieceWidth,
-											y*pieceHeight,
-											 pieceWidth, pieceHeight);
-											 */
 			reColor(canvas.selected, currPos);
 		} else {
 			secondPiece = pieces[currPos];
@@ -128,12 +117,11 @@ canvas.addEventListener('click', function(e) {
 			} else {
 				//audio1.play();
 			}
-			correctPieces += numCorrect - afterCorrect;
+			correctPieces += afterCorrect - numCorrect;
 			newCorrect(firstPiece, currPos);
 			newCorrect(secondPiece, prevPos);
 
-
-			//$("#numCorrect").update("Number Correct: " + correctPieces)
+			$("#numCorrect").html("Number Correct: " + correctPieces);
 			//$("#numCorrect").animate({'color': '#FF0000'}, 2000);
 			//$("#numCorrect").animate({'color': '#000000'}, 2000);
 		}
@@ -170,12 +158,13 @@ function newCorrect(piece, position) {
 		greenPieces[[piece.col, piece.row]] = [true, true, true, true];
 		//console.log('true array' , greenPieces[[piece.col, piece.row]])
 		for (n of actualNeighbors) {
+			//console.log('test2.1 has neighbors', n)
 			if (hasPiece(currCorrect, n)) {
 				var d = direction(n, piece);
 				var currD = direction(piece, n);
 				greenPieces[[n.col, n.row]][d] = false;
 				greenPieces[[piece.col, piece.row]][currD] = false;
-				//console.log('neighbor', n, "greenPieces ",greenPieces[[n.col, n.row]])
+				console.log('neighbor', n, "greenPieces ",greenPieces[[n.col, n.row]])
 				reColor(n, PairToIndex(n.col, n.row));
 			}
 		}
@@ -190,6 +179,7 @@ function hasPiece(set, piece) {
 	var row = piece.row;
 	var col = piece.col;
 	for (p of set) {
+		//console.log('inside currCorrect', p)
 		if (p.row == row && p.col == col) {
 			return true
 		}
@@ -224,12 +214,13 @@ function direction(piece, neighbor) {
 }
 
 function neighbors(originalPiece) {
+
 	var a = originalPiece.col;
 	var b = originalPiece.row;
 	var potentialNeighbors = [[a + 1, b], [a - 1, b], [a, b - 1], [a, b + 1]];
 	var actualNeighbors = [];
 	for (n of potentialNeighbors) {
-		if (n[0] >=0 && n[0] <=9 && n[1] >= 0 && n[1] <= 9) {
+		if (n[0] >=0 && n[0] <=9 && n[1] >= 0 && n[1] <= 19) {
 			var tempPiece = {col:n[0], row:n[1]};
 			actualNeighbors.push(tempPiece);
 		}
@@ -255,7 +246,7 @@ function reColor(piece, position) {
 }
 
 function colorGreen(piece, position) {
-	//console.log('test 3 piece', piece, greenPieces[[piece.col, piece.row]])
+	console.log('test 3 piece', piece, greenPieces[[piece.col, piece.row]])
 	for (i = 0; i < 4; i++) {
 		if (greenPieces[[piece.col, piece.row]][i]) {
 			colorGreenHelper(piece, position, i);
