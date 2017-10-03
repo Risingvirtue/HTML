@@ -18,7 +18,7 @@ for (y = 0; y < 10; y++) {
 			var dict = {col:y, row:x};
 			pieces.push(dict);
 			shiftedPieces.push(dict);
-			greenPieces[dict] = [false, false, false, false];
+			greenPieces[[y,x]] = [false, false, false, false];
 			piecePosition[dict] = PairToIndex(y,x);
 	}
 }
@@ -148,33 +148,64 @@ function rightPlace(piece, position) {
 }
 
 function newCorrect(piece, position) {
-	if (currCorrect.has(piece)) {
-		console.log('test1')
-		currCorrect.delete(piece);
+	if (hasPiece(currCorrect, piece)) {
+		//console.log('test1')
+		removePiece(currCorrect, piece);
 		var actualNeighbors = neighbors(piece);
-		greenPieces[piece]  = [false, false, false, false];
+		greenPieces[[piece.col, piece.row]]  = [false, false, false, false];
 		for (n of actualNeighbors) {
-			var d = direction(n, piece);
-			greenPieces[n][d] = true;
-			reColor(n, piecePosition[n]);
-		}
-	}
-	if (!currCorrect.has(piece) && rightPlace(piece, position)) {
-		console.log('test2', piece)
-		currCorrect.add(piece);
-		var actualNeighbors = neighbors(piece);
-		greenPieces[piece] = [true, true, true, true];
-		for (n of actualNeighbors) {
-
-			var d = direction(n, piece);
-			var currD = direction(piece, n);
-			greenPieces[n][d] = false;
-			greenPieces[piece][currD] = false;
-			console.log('piece', piece, 'neighbor', n, "greenPieces ", greenPieces[n])
-			reColor(n, piecePosition[n]);
+			if (hasPiece(currCorrect, n)) {
+				//console.log('pass1')
+				var d = direction(n, piece);
+				greenPieces[[n.col, n.row]][d] = true;
+				reColor(n, PairToIndex(n.col, n.row));
+			}
 		}
 		reColor(piece, position);
 	}
+	if (!hasPiece(currCorrect, piece) && rightPlace(piece, position)) {
+		//console.log('test2', piece)
+		currCorrect.add(piece);
+		var actualNeighbors = neighbors(piece);
+		greenPieces[[piece.col, piece.row]] = [true, true, true, true];
+		//console.log('true array' , greenPieces[[piece.col, piece.row]])
+		for (n of actualNeighbors) {
+			if (hasPiece(currCorrect, n)) {
+				var d = direction(n, piece);
+				var currD = direction(piece, n);
+				greenPieces[[n.col, n.row]][d] = false;
+				greenPieces[[piece.col, piece.row]][currD] = false;
+				//console.log('neighbor', n, "greenPieces ",greenPieces[[n.col, n.row]])
+				reColor(n, PairToIndex(n.col, n.row));
+			}
+		}
+		//console.log('piece' , piece, 'array',	greenPieces[[piece.col, piece.row]])
+		var coordinate = IndexToPair(position);
+		//color without borders
+		reColor(piece, position);
+	}
+}
+
+function hasPiece(set, piece) {
+	var row = piece.row;
+	var col = piece.col;
+	for (p of set) {
+		if (p.row == row && p.col == col) {
+			return true
+		}
+	}
+	return false
+}
+
+function removePiece(set, piece) {
+	var row = piece.row;
+	var col = piece.col;
+	for (p of set) {
+		if (p.row == row && p.col == col) {
+			set.delete(p);
+		}
+	}
+	return
 }
 
 
@@ -224,14 +255,16 @@ function reColor(piece, position) {
 }
 
 function colorGreen(piece, position) {
+	//console.log('test 3 piece', piece, greenPieces[[piece.col, piece.row]])
 	for (i = 0; i < 4; i++) {
-		if (greenPieces[piece][i]) {
+		if (greenPieces[[piece.col, piece.row]][i]) {
 			colorGreenHelper(piece, position, i);
 		}
 	}
 }
 
 function colorGreenHelper(piece, position, index) {
+	//console.log('test 4 colored in:', i, 'on piece', piece)
 	var a = IndexToPair(position)[1]
 	var b = IndexToPair(position)[0]
 	if (index == 0) {
@@ -251,6 +284,7 @@ function colorGreenHelper(piece, position, index) {
 		ctx.strokeStyle = "green";
 		ctx.stroke();
 	} else if (index == 2) {
+
 		ctx.clearRect(b * pieceWidth + pieceWidth - 1, a * pieceHeight, 1, pieceHeight);
 		ctx.beginPath();
 		ctx.lineWidth = 2;
