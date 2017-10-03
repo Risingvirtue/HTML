@@ -11,16 +11,19 @@ ctx.canvas.height = image.height;
 
 var pieces = [];
 var shiftedPieces = [];
+var greenPieces = {};
 for (y = 0; y < 10; y++) {
 	for (x = 0; x < 20; x++) {
-			pieces.push({col:y, row:x});
-			shiftedPieces.push({col:y, row:x});
+			var dict = {col:y, row:x};
+			pieces.push(dict);
+			shiftedPieces.push(dict);
+			greenPieces[[y,x]] = [false, false, false, false]
 	}
 }
 canvas.pieces = pieces;
 canvas.image = image;
 function start() {
-	shuffle(pieces)
+	//shuffle(pieces)
 
 	var width = image.width;
 	var height = image.height;
@@ -62,7 +65,7 @@ function pad(number) {
 }
 
 
-
+var currCorrect = new Set();
 
 //swapping images
 canvas.clicked = false;
@@ -79,7 +82,6 @@ canvas.addEventListener('click', function(e) {
 	currPos = PairToIndex(y,x);
 	prevXY = currXY;
 	currXY = [x,y];
-
 	if (!canvas.clicked) {
 		canvas.clicked = !canvas.clicked;
 		canvas.selected = pieces[currPos];
@@ -108,7 +110,6 @@ canvas.addEventListener('click', function(e) {
 			var dy = firstPiece.col * pieceHeight;
 			var dx2 = secondPiece.row * pieceWidth;
 			var dy2 = secondPiece.col * pieceHeight;
-
 			ctx.clearRect(prevXY[0] * pieceWidth,
 										prevXY[1] * pieceHeight,
 										pieceWidth, pieceHeight);
@@ -129,9 +130,13 @@ canvas.addEventListener('click', function(e) {
 				audio1.play();
 			}
 			correctPieces += numCorrect - afterCorrect;
-			$("#numCorrect").update("Number Correct: " + correctPieces)
-			$("#numCorrect").animate({'color': '#FF0000'}, 2000);
-			$("#numCorrect").animate({'color': '#000000'}, 2000);
+			newCorrect(firstPiece, currPos);
+			newCorrect(secondPiece, prevPos);
+
+
+			//$("#numCorrect").update("Number Correct: " + correctPieces)
+			//$("#numCorrect").animate({'color': '#FF0000'}, 2000);
+			//$("#numCorrect").animate({'color': '#000000'}, 2000);
 		}
 	}
 })
@@ -141,8 +146,138 @@ canvas.addEventListener('click', function(e) {
 function rightPlace(piece, position) {
 	coordinate = IndexToPair(position);
 	return piece.col == coordinate[1] && piece.row == coordinate[0]
+}
+
+function newCorrect(piece, position) {
+	if (currCorrect.has(piece)) {
+		currCorrect.remove(piece);
+		colorNeighborGreen(piece);
+	}
+
+	if (!currCorrect.has(piece) && rightPlace(piece, position)) {
+		currCorrect.add(piece);
+		colorGreen(piece);
+	}
+}
+//spreads green to other pieces after removing from correct
+function colorNeighborGreen(piece) {
+	return
+}
+
+
+//colors itself green
+function colorGreen(piece) {
+	var a = piece.col;
+	var b = piece.row;
+	var neighbors = colorGreenHelper(piece)[0];
+	var nonNeighbors = colorGreenHelper(piece)[1];
+
+	for (n of neighbors) {
+		//negative means up, left
+		var location = [n.col - a, n.row - b];
+		if (currCorrect.has(n)) {
+				removeLine(n, location);
+		} else {
+			colorItself(piece, location);
+		}
+	}
+
+	for (n1 of nonNeighbors) {
+		var location = [n1.col - a, n1.row - b];
+		var direction = index[0] + index[1] + Math.abs(index[0]) + ;
+		colorItself(piece, location);
+	}
 
 }
+
+function colorItself(piece, index) {
+	var a = piece.col;
+	var b = piece.row;
+	var direction = index[0] + index[1] + Math.abs(index[0]);
+	if (direction == -2) {
+		ctx.beginPath();
+		ctx.moveTo(b * pieceWidth + 1, a * pieceHeight + 1);
+		ctx.lineTo(b * pieceWidth + 1, a * pieceHeight + pieceHeight - 1);
+		ctx.strokeStyle = "green";
+		ctx.stroke();
+	} else if (direction == -1) {
+		ctx.beginPath();
+		ctx.moveTo(b * pieceWidth + 1, a * pieceHeight + 1);
+		ctx.lineTo(b * pieceWidth + pieceWidth - 1, a * pieceHeight + 1);
+		ctx.strokeStyle = "green";
+		ctx.stroke();
+	} else if (direction == 1) {
+		ctx.beginPath();
+		ctx.moveTo(b * pieceWidth + pieceWidth - 1, a * pieceHeight + 1);
+		ctx.lineTo(b * pieceWidth + pieceWidth - 1, a * pieceHeight + pieceHeight - 1);
+		ctx.strokeStyle = "green";
+		ctx.stroke();
+	} else {
+			ctx.beginPath();
+			ctx.moveTo(b * pieceWidth + 1, a * pieceHeight + pieceHeight - 1);
+			ctx.lineTo(b * pieceWidth + pieceWidth - 1,  a * pieceHeight + pieceHeight - 1);
+			ctx.strokeStyle = "green";
+			ctx.stroke();
+	}
+}
+function colorGreenHelper(piece) {
+	var a = piece.col;
+	var b = piece.row;
+	var potentialNeighbors = [[a + 1, b], [a - 1, b], [a, b + 1], [a, b - 1]];
+	var neighbors = [];
+	var nonNeighbors = [];
+	for (num in  potentialNeighbors) {
+		n = potentialNeighbors[num]
+		var tempPiece = {col:n[0], row:n[1]};
+		if (n[0] >= 0 && n[0] <= 9 && n[1] >= 0 && n[1] <= 19) {
+			neighbors.push(tempPiece);
+		} else {
+			nonNeighbors.push(tempPiece);
+		}
+	}
+	return [neighbors, nonNeighbors]
+}
+
+
+function removeLine(neighborPiece, index) {
+	//left = -2 , up = -1, right = 1, down = 2
+	var direction = index[0] + index[1] + Math.abs(index[0]);
+	if (direction == -2) {
+		var dx = neighborPiece.row * pieceWidth + pieceWidth - 1;
+		var dy = neighborPiece.col * pieceHeight;
+		ctx.clearRect(image, dx, dy, 1, pieceHeight);
+		var shiftedPiece = pieces[PairToIndex(index[0], index[1])];
+		var shiftedDx = shiftedPiece.row * pieceWidth + pieceWidth - 1;
+		var shiftedDy = shiftedPiece.col * pieceHeight;
+		ctx.drawImage(image, shiftedDx, shiftedDy, 1, pieceHeight, dx, dy, 1, pieceHeight);
+	} else if (direction == -1) {
+		var dx = neighborPiece.row * pieceWidth;
+		var dy = neighborPiece.col * pieceHeight + pieceHeight - 1;
+		ctx.clearRect(image, dx, dy, pieceWidth, 1);
+		var shiftedPiece = pieces[PairToIndex(index[0], index[1])];
+		var shiftedDx = shiftedPiece.row * pieceWidth;
+		var shiftedDy = shiftedPiece.col * pieceHeight + pieceHeight - 1;
+		ctx.drawImage(image, shiftedDx, shiftedDy, pieceWidth, 1, dx, dy, pieceWidth, 1);
+	} else if (direction == 1) {
+		var dx = neighborPiece.row * pieceWidth;
+		var dy = neighborPiece.col * pieceHeight;
+		ctx.clearRect(image, dx, dy, 1, pieceHeight);
+		var shiftedPiece = pieces[PairToIndex(index[0], index[1])];
+		var shiftedDx = shiftedPiece.row * pieceWidth;
+		var shiftedDy = shiftedPiece.col * pieceHeight;
+		ctx.drawImage(image, shiftedDx, shiftedDy, 1, pieceHeight, dx, dy, 1, pieceHeight);
+	} else {
+		var dx = neighborPiece.row * pieceWidth;
+		var dy = neighborPiece.col * pieceHeight;
+		ctx.clearRect(image, dx, dy, 1, pieceHeight);
+		var shiftedPiece = pieces[PairToIndex(index[0], index[1])];
+		var shiftedDx = shiftedPiece.row * pieceWidth;
+		var shiftedDy = shiftedPiece.col * pieceHeight;
+		ctx.drawImage(image, shiftedDx, shiftedDy, pieceWidth, 1, dx, dy, pieceWidth, 1);
+	}
+
+}
+
 
 function PairToIndex(y , x) {
 	return x + y * 20
