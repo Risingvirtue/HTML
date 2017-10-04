@@ -30,7 +30,7 @@ for (y = 0; y < 10; y++) {
 //shuffles and draws shuffled pieces onto canvas
 
 function start() {
-	shuffle(pieces);
+	//shuffle(pieces);
 	console.log('pieces1', pieces);
 	var width = image.width;
 	var height = image.height;
@@ -185,7 +185,6 @@ function newCorrect(piece, position) {
 	}
 }
 
-
 function hasPiece(set, piece) {
 	var row = piece.row;
 	var col = piece.col;
@@ -207,7 +206,6 @@ function removePiece(set, piece) {
 	}
 	return
 }
-
 
 function direction(piece, neighbor) {
 	var x = neighbor.row - piece.row;
