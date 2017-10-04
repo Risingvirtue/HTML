@@ -1,3 +1,4 @@
+//initialize canvas, audio, image
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext("2d");
 var audio1 = new Audio("https://www.soundjay.com/button/beep-05.wav");
@@ -11,6 +12,7 @@ image.src = link;
 ctx.canvas.width = image.width;
 ctx.canvas.height = image.height;
 
+//initial pieces of image 10x20
 var pieces = [];
 var shiftedPieces = [];
 var greenPieces = {};
@@ -24,11 +26,12 @@ for (y = 0; y < 10; y++) {
 			piecePosition[dict] = PairToIndex(y,x);
 	}
 }
-canvas.pieces = pieces;
-canvas.image = image;
-function start() {
-	//shuffle(pieces)
 
+//shuffles and draws shuffled pieces onto canvas
+
+function start() {
+	shuffle(pieces);
+	console.log('pieces1', pieces);
 	var width = image.width;
 	var height = image.height;
 	var cols = 10.0;
@@ -42,16 +45,16 @@ function start() {
 				var currY = y * pieceHeight;
 				var currPiece = pieces[PairToIndex(y , x)]
 				correctPieces += rightPlace(currPiece, PairToIndex(y , x));
-				ctx.drawImage(image, currX, currY, pieceWidth, pieceHeight,
-				currPiece.row * pieceWidth,
-				currPiece.col * pieceHeight,
+				ctx.drawImage(image, currPiece.row * pieceWidth, currPiece.col * pieceHeight, pieceWidth, pieceHeight,
+				currX,
+				currY,
 				 pieceWidth, pieceHeight);
 		}
 	}
 }
+
 //current Correct
 $("#numCorrect").append(correctPieces);
-
 
 //timer
 var sec = 0;
@@ -67,8 +70,7 @@ function pad(number) {
 	$("#seconds").html(pad(sec % 60));
 	$("#minutes").html(pad(parseInt(sec / 60.0, 10)));
 }
-
-
+//for bookkeeping purposes
 var currCorrect = new Set();
 
 //swapping images
@@ -78,6 +80,7 @@ var prevPos = 'tester';
 var currXY = 'a';
 var prevXY = 'b';
 canvas.addEventListener('click', function(e) {
+	//useful variables
 	pieceWidth = canvas.width / 20;
 	pieceHeight = canvas.height / 10;
 	x = Math.floor(e.layerX / pieceWidth);
@@ -86,41 +89,50 @@ canvas.addEventListener('click', function(e) {
 	currPos = PairToIndex(y,x);
 	prevXY = currXY;
 	currXY = [x,y];
+	//first click
+
 	if (!canvas.clicked) {
 		canvas.clicked = !canvas.clicked;
 		canvas.selected = pieces[currPos];
+		console.log('selected Piece:', canvas.selected)
 		var dx = canvas.selected.row * pieceWidth;
 		var dy = canvas.selected.col * pieceHeight;
 		ctx.strokeStyle = '#FD0';
 		ctx.strokeRect(x * pieceWidth + 1, y * pieceHeight + 1, pieceWidth - 2 , pieceHeight - 2);
-	} else {
+	} else { //second click
 		canvas.clicked = !canvas.clicked;
+		//if same tile clicked
 		if (canvas.selected == pieces[currPos]) {
 			reColor(canvas.selected, currPos);
-		} else {
+		} else { //swap
+
 			secondPiece = pieces[currPos];
 			firstPiece = canvas.selected;
-			var dx = firstPiece.row * pieceWidth;
-			var dy = firstPiece.col * pieceHeight;
-			var dx2 = secondPiece.row * pieceWidth;
-			var dy2 = secondPiece.col * pieceHeight;
+			console.log(currXY, secondPiece)
+			console.log(prevXY, firstPiece)
 			reColor(firstPiece, currPos);
 			reColor(secondPiece, prevPos);
 			var numCorrect = rightPlace(firstPiece, prevPos) + rightPlace(secondPiece, currPos);
+			var afterCorrect = rightPlace(firstPiece, currPos) + rightPlace(secondPiece, prevPos);
+			//swap in bookkeeping
+			var temp = secondPiece;
 			pieces[currPos] = firstPiece;
-			pieces[prevPos] = secondPiece;
+			pieces[prevPos] = temp;
 			piecePosition[firstPiece] = currPos;
 			piecePosition[secondPiece] = prevPos;
-			var afterCorrect = rightPlace(firstPiece, currPos) + rightPlace(secondPiece, prevPos);
+
+
 			if (afterCorrect - numCorrect > 0) {
-				//audio2.play();
+				audio2.play();
 			} else {
-				//audio1.play();
+				audio1.play();
 			}
 			correctPieces += afterCorrect - numCorrect;
+			//update greenborders
 			newCorrect(firstPiece, currPos);
 			newCorrect(secondPiece, prevPos);
 
+			//update text
 			$("#numCorrect").html("Number Correct: " + correctPieces);
 			//$("#numCorrect").animate({'color': '#FF0000'}, 2000);
 			//$("#numCorrect").animate({'color': '#000000'}, 2000);
@@ -135,15 +147,16 @@ function rightPlace(piece, position) {
 	return piece.col == coordinate[1] && piece.row == coordinate[0]
 }
 
+//updates greenborders
 function newCorrect(piece, position) {
+	//swapped out of position
 	if (hasPiece(currCorrect, piece)) {
-		//console.log('test1')
 		removePiece(currCorrect, piece);
 		var actualNeighbors = neighbors(piece);
 		greenPieces[[piece.col, piece.row]]  = [false, false, false, false];
+		//make correctNeighbors get borders back
 		for (n of actualNeighbors) {
 			if (hasPiece(currCorrect, n)) {
-				//console.log('pass1')
 				var d = direction(n, piece);
 				greenPieces[[n.col, n.row]][d] = true;
 				reColor(n, PairToIndex(n.col, n.row));
@@ -151,14 +164,13 @@ function newCorrect(piece, position) {
 		}
 		reColor(piece, position);
 	}
+	//swapped into correct position
 	if (!hasPiece(currCorrect, piece) && rightPlace(piece, position)) {
-		//console.log('test2', piece)
 		currCorrect.add(piece);
 		var actualNeighbors = neighbors(piece);
 		greenPieces[[piece.col, piece.row]] = [true, true, true, true];
-		//console.log('true array' , greenPieces[[piece.col, piece.row]])
+		//make correct neighbors lose border
 		for (n of actualNeighbors) {
-			//console.log('test2.1 has neighbors', n)
 			if (hasPiece(currCorrect, n)) {
 				var d = direction(n, piece);
 				var currD = direction(piece, n);
@@ -168,18 +180,16 @@ function newCorrect(piece, position) {
 				reColor(n, PairToIndex(n.col, n.row));
 			}
 		}
-		//console.log('piece' , piece, 'array',	greenPieces[[piece.col, piece.row]])
 		var coordinate = IndexToPair(position);
-		//color without borders
 		reColor(piece, position);
 	}
 }
+
 
 function hasPiece(set, piece) {
 	var row = piece.row;
 	var col = piece.col;
 	for (p of set) {
-		//console.log('inside currCorrect', p)
 		if (p.row == row && p.col == col) {
 			return true
 		}
@@ -213,8 +223,8 @@ function direction(piece, neighbor) {
 	}
 }
 
+//finds and creates neighbors of a piece
 function neighbors(originalPiece) {
-
 	var a = originalPiece.col;
 	var b = originalPiece.row;
 	var potentialNeighbors = [[a + 1, b], [a - 1, b], [a, b - 1], [a, b + 1]];
@@ -227,16 +237,12 @@ function neighbors(originalPiece) {
 	}
 	return actualNeighbors
 }
-/*
-//spreads green to other pieces after removing from correct
-function colorNeighborGreen(piece) {
-	return
-}
-*/
+
+//recolors piece with green borders
 function reColor(piece, position) {
 	var coordinate = IndexToPair(position);
 	//color without borders
-	ctx.clearRect(coordinate[0] * pieceWidth,coordinate[1] * pieceHeight, pieceWidth, pieceHeight);
+	ctx.clearRect(coordinate[0] * pieceWidth , coordinate[1] * pieceHeight, pieceWidth, pieceHeight);
 	ctx.drawImage(image, piece.row * pieceWidth, piece.col * pieceHeight, pieceWidth, pieceHeight,
 	coordinate[0] * pieceWidth,
 	coordinate[1] * pieceHeight,
@@ -245,8 +251,8 @@ function reColor(piece, position) {
 	colorGreen(piece, position);
 }
 
+//adds to each edge
 function colorGreen(piece, position) {
-	console.log('test 3 piece', piece, greenPieces[[piece.col, piece.row]])
 	for (i = 0; i < 4; i++) {
 		if (greenPieces[[piece.col, piece.row]][i]) {
 			colorGreenHelper(piece, position, i);
@@ -255,7 +261,6 @@ function colorGreen(piece, position) {
 }
 
 function colorGreenHelper(piece, position, index) {
-	//console.log('test 4 colored in:', i, 'on piece', piece)
 	var a = IndexToPair(position)[1]
 	var b = IndexToPair(position)[0]
 	if (index == 0) {
@@ -275,7 +280,6 @@ function colorGreenHelper(piece, position, index) {
 		ctx.strokeStyle = "green";
 		ctx.stroke();
 	} else if (index == 2) {
-
 		ctx.clearRect(b * pieceWidth + pieceWidth - 1, a * pieceHeight, 1, pieceHeight);
 		ctx.beginPath();
 		ctx.lineWidth = 2;
@@ -301,6 +305,7 @@ function PairToIndex(y , x) {
 function IndexToPair(position) {
 	return [position % 20, Math.floor(position / 20)]
 }
+
 //original shuffle found in stack overflow
 function shuffle(a) {
   for(var j, x, i = a.length; i; j = Math.floor(Math.random() * i), x = a[--i], a[i] = a[j], a[j] = x);
