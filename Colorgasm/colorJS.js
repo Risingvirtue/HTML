@@ -52,8 +52,7 @@ function initialize(scramble, number) {
 
 //console.log(HexToRGB("#123456"))
 //steps through each timeStep
-$(document).ready(function()
-{
+$(document).ready(function() {
     var refresh = setInterval(timeStep, 100);
 });
 
@@ -75,7 +74,8 @@ function movePixel(pixelList, counter) {
 		var currIndex = colorIndexWidth[colorRGB][0];
 		var height = colorIndexWidth[colorRGB][1];
 		var actualIndex = colorToIndex(colorArray[0], colorArray[1], colorArray[2]);
-		//console.log('color:', color, 'currIndex:', currIndex, 'actualIndex:', actualIndex)
+
+		//sorts each pixel to correct place
 		if (currIndex < actualIndex) {
 			ctx.fillStyle = color;
 			ctx.fillRect(currIndex + 1, height, 1, 1);
