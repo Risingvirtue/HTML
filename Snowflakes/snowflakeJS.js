@@ -29,21 +29,25 @@ class Snowflake {
 
 var snowflakeStack = [];
 //generate initial snowflakes
-while (snowflakeStack.length != 100) {
-
-  snowflakeStack.push(generateSnow());
+function generateTo100(snowflakeStack) {
+  while (snowflakeStack.length != 100) {
+    snowflakeStack.push(generateSnow());
+  }
 }
+
 
 function generateSnow() {
   var randSize = Math.random() * snowflakeMaxSize;
   var randPos = Math.random() * canvas.width;
   var velocity = 1 + Math.random() * (maxVelocity - 1 ); //min velocty of 1
   var angle = Math.PI * Math.random();
-  var fade = Math.random();
+  var fade = 0.8 + 0.2 * Math.random();
   var rotationSpeed = Math.random();
   var tempSnowflake = new Snowflake(randSize, randPos, velocity, angle, rotationSpeed, fade);
   return tempSnowflake;
 }
+
+generateTo100(snowflakeStack);
 setInterval(timeStep, 100);
 function timeStep() {
   ctx.clearRect(0,0, canvas.width, canvas.height);
@@ -55,15 +59,20 @@ function timeStep() {
         continue;
     }
     ctx.save();
-    //snow.height += (9.8);
-    ctx.translate(flake.xPos, 0);
+    flake.height += flake.velocity;
+    ctx.translate(flake.xPos, flake.height);
     flake.angle += flake.rotationSpeed * (Math.PI / 48);
     ctx.rotate(flake.angle);
     flake.alpha  = flake.alpha * flake.fade;
     ctx.globalAlpha = flake.alpha;
-    ctx.drawImage(flake.image, -size/2, -size/2, size, size);
-    ctx.translate(-flake.xPos, 0);
+    ctx.drawImage(flake.image, -flake.size/2, -flake.size/2, flake.size, flake.size);
+    ctx.translate(-flake.xPos, -flake.height);
     ctx.restore();
+    newSnowflakeStack.push(flake);
+  }
+  snowflakeStack = newSnowflakeStack;
+  if (snowflakeStack.length != 100) {
+    generateTo100(snowflakeStack);
   }
 }
 
