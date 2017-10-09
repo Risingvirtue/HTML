@@ -2,7 +2,7 @@
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 var background = new Image();
-background.src = "http://i.imgur.com/MfZhDT4.png";
+background.src = "http://www.wallpaperhdc.com/wp-content/uploads/2017/01/anime-winter-scenery-wallpaper-widescreen.jpg";
 var snowflakeMaxSize = 50.0;
 var maxVelocity = 9.8;
 
@@ -21,7 +21,7 @@ class Snowflake {
   }
   constructImage() {
     var snow = new Image();
-    snow.src = "snowflakeTemplate.png";
+    snow.src = "snowflakeTemplate3.png";
     this.alpha = 1.0;
     this.image = snow;
   }
@@ -30,7 +30,7 @@ class Snowflake {
 var snowflakeStack = [];
 //generate initial snowflakes
 function generateTo100(snowflakeStack) {
-  while (snowflakeStack.length != 100) {
+  while (snowflakeStack.length != 800) {
     snowflakeStack.push(generateSnow());
   }
 }
@@ -41,18 +41,19 @@ function generateSnow() {
   var randPos = Math.random() * canvas.width;
   var velocity = 1 + Math.random() * (maxVelocity - 1 ); //min velocty of 1
   var angle = Math.PI * Math.random();
-  var fade = 0.8 + 0.2 * Math.random();
+  var fade = 0.9 + 0.1 * Math.random();
   var rotationSpeed = Math.random();
   var tempSnowflake = new Snowflake(randSize, randPos, velocity, angle, rotationSpeed, fade);
   return tempSnowflake;
 }
-
+canvas.width = 1280;
+canvas.height = 720;
 generateTo100(snowflakeStack);
 setInterval(timeStep, 100);
 function timeStep() {
   ctx.clearRect(0,0, canvas.width, canvas.height);
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(0,0, canvas.width, canvas.height);
+
+  ctx.drawImage(background, 0,0, canvas.width, canvas.height);
   var newSnowflakeStack = [];
   for (flake of snowflakeStack) {
     if (flake.alpha < 0.01 || flake.height > canvas.height) {
@@ -61,7 +62,7 @@ function timeStep() {
     ctx.save();
     flake.height += flake.velocity;
     ctx.translate(flake.xPos, flake.height);
-    flake.angle += flake.rotationSpeed * (Math.PI / 48);
+    flake.angle += flake.rotationSpeed * (Math.PI / 24);
     ctx.rotate(flake.angle);
     flake.alpha  = flake.alpha * flake.fade;
     ctx.globalAlpha = flake.alpha;
@@ -71,18 +72,18 @@ function timeStep() {
     newSnowflakeStack.push(flake);
   }
   snowflakeStack = newSnowflakeStack;
-  if (snowflakeStack.length != 100) {
+  if (snowflakeStack.length != 800) {
     generateTo100(snowflakeStack);
   }
 }
 
-/*
 
+/*
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 
 var snow = new Image();
-snow.src = "snowflakeImage.png";
+snow.src = "snowflakeTemplate1.png";
 ctx.drawImage(snow, 0, 0, 250, 250);
 
 var imgd = ctx.getImageData(0, 0, 250, 250);
