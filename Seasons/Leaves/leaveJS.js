@@ -1,4 +1,3 @@
-
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 var background = new Image();
@@ -21,9 +20,7 @@ for (var i = 0; i < 511; i++) {
     colorSpectrum.push(tempColor);
   }
 }
-
-
-
+//creates leaf
 class leafImage {
   constructor(size, xPos, velocity, angle, driftSpeed, fade) {
     this.size = size;
@@ -43,6 +40,7 @@ class leafImage {
     this.image = leaf;
   }
 }
+//where leaves are stored
 var leafStack = [];
 
 function generateTo100(leafStack) {
@@ -50,7 +48,7 @@ function generateTo100(leafStack) {
     leafStack.push(generateLeaves());
   }
 }
-
+//generate leaves from randomized integers
 function generateLeaves() {
   var randSize = Math.random() * leafMaxSize;
   var randPos = Math.random() * canvas.width;
@@ -61,13 +59,11 @@ function generateLeaves() {
   var tempLeaf = new leafImage(randSize, randPos, velocity, angle, driftSpeed, fade);
   return tempLeaf;
 }
-
+//create 100 leaves
 generateTo100(leafStack);
 
-
-console.log(leafStack);
-//need velocity, wind, fade
 setInterval(timeStep, 100);
+//creates the next movement
 function timeStep() {
   ctx.clearRect(0,0, canvas.width, canvas.height);
   ctx.drawImage(background, 0 , 0 , canvas.width, canvas.height);
@@ -78,18 +74,19 @@ function timeStep() {
     }
     ctx.save();
     leaf.height += leaf.velocity;
-
-    ctx.translate(leaf.xPos, leaf.height - 250); // generate above canvas
+    ctx.translate(leaf.xPos, leaf.height - 250); //start from above canvas for seamless transition
     leaf.tick += leaf.driftSpeed;
     leaf.angle = Math.PI / 3 * Math.sin(2 * leaf.tick);
+    //make leaves sway
     ctx.rotate(leaf.angle + Math.PI / 4);
-    leaf.alpha  = leaf.alpha * leaf.fade;
+    leaf.alpha  = leaf.alpha * leaf.fade; //fade 
     ctx.globalAlpha = leaf.alpha;
     ctx.drawImage(leaf.image, 100, 100, leaf.size, leaf.size);
     ctx.restore();
     newLeafStack.push(leaf);
   }
   leafStack = newLeafStack;
+  //creates leaves when then disappear
   if (leafStack.length != 100) {
     generateTo100(leafStack);
   }

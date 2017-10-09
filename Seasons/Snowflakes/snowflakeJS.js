@@ -1,4 +1,3 @@
-
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 var background = new Image();
@@ -6,7 +5,7 @@ background.src = "http://www.wallpaperhdc.com/wp-content/uploads/2017/01/anime-w
 var snowflakeMaxSize = 50.0;
 var maxVelocity = 9.8;
 
-//need velocity, wind, fade
+//creates snowflake class
 class Snowflake {
   constructor(size, xPos, velocity, angle, rotationSpeed, fade) {
     this.size = size;
@@ -26,16 +25,16 @@ class Snowflake {
     this.image = snow;
   }
 }
-
+//where snowflakes are stored
 var snowflakeStack = [];
+
 //generate initial snowflakes
 function generateTo100(snowflakeStack) {
   while (snowflakeStack.length != 800) {
     snowflakeStack.push(generateSnow());
   }
 }
-
-
+//randomized attributes generator
 function generateSnow() {
   var randSize = Math.random() * snowflakeMaxSize;
   var randPos = Math.random() * canvas.width;
@@ -46,11 +45,33 @@ function generateSnow() {
   var tempSnowflake = new Snowflake(randSize, randPos, velocity, angle, rotationSpeed, fade);
   return tempSnowflake;
 }
+//sets canvas to desired width/height
 canvas.width = 1280;
 canvas.height = 720;
+
+//creates 800 randomized snowflakes
 generateTo100(snowflakeStack);
+
+//creates a timestep
 setInterval(timeStep, 100);
+
+/* Experimentation with wind
+var counter = 0;
+var amortized = 2;
+var wind = 0;
+var sign = 1
+*/
+
+//each timeStep
 function timeStep() {
+  /*
+  counter += 1;
+  if (counter % amortized == 0) {
+    amortized  = amortized * 2;
+    sign = -sign;
+  }
+  wind += sign * 3 * Math.random();
+  */
   ctx.clearRect(0,0, canvas.width, canvas.height);
 
   ctx.drawImage(background, 0,0, canvas.width, canvas.height);
@@ -59,6 +80,7 @@ function timeStep() {
     if (flake.alpha < 0.01 || flake.height > canvas.height) {
         continue;
     }
+    //rotation
     ctx.save();
     flake.height += flake.velocity;
     ctx.translate(flake.xPos, flake.height);
@@ -72,12 +94,13 @@ function timeStep() {
     newSnowflakeStack.push(flake);
   }
   snowflakeStack = newSnowflakeStack;
+  //creates more snow if needed (runs off screen or disappears)
   if (snowflakeStack.length != 800) {
     generateTo100(snowflakeStack);
   }
 }
 
-
+//helper function to generate transparent snowflake template
 /*
 canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
