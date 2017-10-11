@@ -20,6 +20,7 @@ for (var i = 0; i < 511; i++) {
   }
 }
 
+//generates a leaf with a certain alpha,
 function createColoredLeaf(start, end, alpha, invert) {
   ctx.clearRect(0,0, canvas.width, canvas.height);
   var tempWidth = canvas.width;
@@ -144,7 +145,7 @@ function timeStep() {
     ctx.globalAlpha = leaf.alpha;
     ctx.drawImage(leaf.image, 100, 100, leaf.size, leaf.size);
     ctx.restore();
-    
+
   }
 
 }
