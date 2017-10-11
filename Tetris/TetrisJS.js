@@ -68,12 +68,40 @@ class box {
       board[this.yPos + 2][this.xPos + 1] = true;
     }
   }
+
+  movement(direction) {
+    if (direction == '37') {
+      if ((this.xPos != 0) && (board[this.yPos + 2][this.xPos - 1] == false) &&
+       (board[this.yPos + 3][this.xPos - 1] == false)){
+        board[this.yPos + 2][this.xPos + 1] = false;
+        board[this.yPos + 3][this.xPos + 1] = false;
+        board[this.yPos + 2][this.xPos - 1] = true;
+        board[this.yPos + +3][this.xPos - 1] = true;
+        this.xPos -= 1;
+      }
+    }
+    if (direction == '39') {
+      if ((this.xPos != 9) && (board[this.yPos + 2][this.xPos + 2] == false) &&
+       (board[this.yPos + 3][this.xPos + 2] == false)){
+        console.log(this.xPos);
+        board[this.yPos + 2][this.xPos] = false;
+        board[this.yPos + 3][this.xPos] = false;
+        board[this.yPos + 2][this.xPos + 1] = true;
+        board[this.yPos + 3][this.xPos + 1] = true;
+        this.xPos += 1;
+      }
+    }
+    console.log('curr board is: ', board);
+    resetBoard();
+    this.drawImage();
+  }
 }
 
-var square = new box();
-square.drawImage();
+
+var currShape = new box();
+currShape.drawImage();
 var shapes = [];
-shapes.push(square);
+shapes.push(currShape);
 setInterval(timeStep, 100);
 
 function timeStep() {
@@ -83,4 +111,13 @@ function timeStep() {
     shape.drawImage();
   }
   drawWhiteLines();
+}
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+  if (e.keyCode == '37' || e.keyCode == '39') {
+    currShape.movement(e.keyCode);
+  }
+
 }
