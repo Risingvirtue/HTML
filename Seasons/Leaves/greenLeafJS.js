@@ -99,7 +99,7 @@ function generateTo100(leafStack) {
   }
 }
 
-function generateLeaves(index) {
+function generateLeaves() {
   var randSize = Math.random() * leafMaxSize;
   var randPos = Math.random() * canvas.width;
   var velocity = 1 + Math.random() * (maxVelocity - 1); //min velocty of 1
