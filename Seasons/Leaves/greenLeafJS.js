@@ -144,7 +144,7 @@ function timeStep() {
     ctx.globalAlpha = leaf.alpha;
     ctx.drawImage(leaf.image, 100, 100, leaf.size, leaf.size);
     ctx.restore();
-    
+
   }
 
 }
