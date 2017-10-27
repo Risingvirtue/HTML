@@ -1,6 +1,8 @@
 $(document).ready(function() {
 	resetMap();
 	resetSeason();
+	resetData();
+	resetNet();
 	$(window).scroll(function () {
     //console.log($(window).scrollTop())
     if ($(window).scrollTop() > 280) {
@@ -36,7 +38,7 @@ mapCanvas.onmouseover = function onMouseover(e) {
 	ctx.fillText("Bear Maps", 100, 75);
 }
 mapCanvas.addEventListener("mouseout",function() {
-	resetMap()
+	resetMap();
 });
 
 
@@ -66,12 +68,55 @@ seasonCanvas.addEventListener("mouseout",function() {
 	resetSeason();
 });
 
-mailImage = document.getElementById("mail");
-gitImage = document.getElementById("github");
-facebookImage = document.getElementById("facebook");
-mailImage.addEventListener("mouseover", function() {
-	gitImage.
+
+dataCanvas = document.getElementById("DD");
+Dctx = dataCanvas.getContext("2d");
+var dataImage = new Image();
+dataImage.src = "database.png";
+
+function resetData() {
+	Dctx.clearRect(0,0, dataCanvas.width, dataCanvas.height);
+	Dctx.drawImage(dataImage, 25, 50, 50, 50);
+	Dctx.font = "15px Courier";
+	Dctx.fillStyle = "#000000";
+	Dctx.fillText("Database Development", 100, 75);
 }
+
+dataCanvas.onmouseover = function onMouseover(e) {
+	Dctx.clearRect(0,0, dataCanvas.width, dataCanvas.height);
+	Dctx.drawImage(dataImage, 12.5, 37.5, 75, 75);
+	Dctx.font = "15px Courier";
+	Dctx.fillStyle = "#F19CBB";
+	Dctx.fillText("Database Development", 100, 75);
+}
+dataCanvas.addEventListener("mouseout",function() {
+	resetData();
+});
+
+
+netCanvas = document.getElementById("net");
+Nctx = netCanvas.getContext("2d");
+var netImage = new Image();
+netImage.src = "net1.png";
+
+function resetNet() {
+	Nctx.clearRect(0,0, dataCanvas.width, dataCanvas.height);
+	Nctx.drawImage(netImage, 25, 50, 50, 50);
+	Nctx.font = "30px Courier";
+	Nctx.fillStyle = "#000000";
+	Nctx.fillText("Bayes' Net", 100, 75);
+}
+
+netCanvas.onmouseover = function onMouseover(e) {
+	Nctx.clearRect(0,0, dataCanvas.width, dataCanvas.height);
+	Nctx.drawImage(netImage, 12.5, 37.5, 75, 75);
+	Nctx.font = "30px Courier";
+	Nctx.fillStyle = "#F19CBB";
+	Nctx.fillText("Bayes' Net", 100, 75);
+}
+netCanvas.addEventListener("mouseout",function() {
+	resetNet();
+});
 
 
 

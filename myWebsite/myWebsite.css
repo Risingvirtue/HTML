@@ -8,7 +8,6 @@
 	width: 100%;
 }
 body {
-	background-color: #F0F8FF;
 }
 canvas {
 	 height: 150px;
@@ -21,10 +20,10 @@ canvas:hover {
 	-webkit-box-shadow: 0 0 10px #ccc; 
 	box-shadow: 0 0 10px #ccc;
 }
+
 #name {
 	text-align: center;
 	padding:10px;
-	background-color: #F0F8FF;
 }
 
 #navBar {
@@ -35,12 +34,17 @@ a {
 	padding: 10px 20px 10px 20px;;
 }
 
-#contacts {
-	background-color:#000000;
+#navContacts {
 	padding: 5px 0 5px 0;
 }
 
+#navContacts:hover {
+	filter: opacity(50%);
+}
 
+#facebook.contact:hover{
+	filter:opacity(100%);
+}
 
 
 #page1 {
