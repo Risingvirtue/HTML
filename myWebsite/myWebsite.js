@@ -12,6 +12,8 @@ $(document).ready(function() {
 		});
 	});
 
+
+
 mapCanvas = document.getElementById("bearMaps");
 
 ctx = mapCanvas.getContext("2d");
@@ -20,22 +22,25 @@ mapImage.src = "map.png";
 
 function resetMap() {
 	ctx.clearRect(0,0, mapCanvas.width, mapCanvas.height);
-	ctx.drawImage(mapImage, 50, 50, 50, 50);
+	ctx.drawImage(mapImage, 25, 50, 50, 50);
 	ctx.font = "30px Courier";
 	ctx.fillStyle = "#000000";
-	ctx.fillText("Bear Maps", mapCanvas.width *2/ 5, mapCanvas.height / 2);
+	ctx.fillText("Bear Maps", 100, 75);
 }
 
 mapCanvas.onmouseover = function onMouseover(e) {
 	ctx.clearRect(0,0, mapCanvas.width, mapCanvas.height);
-	ctx.drawImage(mapImage, 40, 40, 75, 75);
+	ctx.drawImage(mapImage, 12.5, 37.5, 75, 75);
 	ctx.font = "30px Courier";
 	ctx.fillStyle = "#F19CBB";
-	ctx.fillText("Bear Maps", mapCanvas.width *2/ 5, mapCanvas.height / 2);
+	ctx.fillText("Bear Maps", 100, 75);
 }
 mapCanvas.addEventListener("mouseout",function() {
 	resetMap()
 });
+
+
+
 
 seasonCanvas = document.getElementById("seasons");
 Sctx = seasonCanvas.getContext("2d");
@@ -44,19 +49,35 @@ seasonImage.src = "leafTransparent.png";
 
 function resetSeason() {
 	Sctx.clearRect(0,0, seasonCanvas.width, seasonCanvas.height);
-	Sctx.drawImage(seasonImage, 50, 50, 50, 50);
+	Sctx.drawImage(seasonImage, 25, 50, 50, 50);
 	Sctx.font = "15px Courier";
 	Sctx.fillStyle = "#000000";
-	Sctx.fillText("Seasons Background", seasonCanvas.width * 2/ 5, seasonCanvas.height / 2);
+	Sctx.fillText("Seasons Background", 100, 75);
 }
 
 seasonCanvas.onmouseover = function onMouseover(e) {
 	Sctx.clearRect(0,0, mapCanvas.width, mapCanvas.height);
-	Sctx.drawImage(seasonImage, 40, 40, 75, 75);
+	Sctx.drawImage(seasonImage, 12.5, 37.5, 75, 75);
 	Sctx.font = "15px Courier";
 	Sctx.fillStyle = "#F19CBB";
-	Sctx.fillText("Seasons Background", seasonCanvas.width * 2/ 5, seasonCanvas.height / 2);
+	Sctx.fillText("Seasons Background", 100, 75);
 }
 seasonCanvas.addEventListener("mouseout",function() {
-	resetSeason()
+	resetSeason();
 });
+
+mailImage = document.getElementById("mail");
+gitImage = document.getElementById("github");
+facebookImage = document.getElementById("facebook");
+mailImage.addEventListener("mouseover", function() {
+	gitImage.
+}
+
+
+
+
+
+
+
+
+
