@@ -1,6 +1,14 @@
 * {
 	font-family: "Courier";
 }
+
+a:link {
+ 
+  text-decoration:  none;
+  font-weight:      bold;
+  color:            blue;
+  }
+
 .navFixed {
 	top: 0;
 	z-index: 100;
@@ -10,10 +18,14 @@
 body {
 }
 canvas {
-	 height: 150px;
+	height: 150px;
     width: 300px;
 
 }
+.page {
+	text-align:center;
+}
+
 
 canvas:hover {
 	-moz-box-shadow: 0 0 10px #ccc;
@@ -38,12 +50,10 @@ a {
 	padding: 5px 0 5px 0;
 }
 
-#navContacts:hover {
-	filter: opacity(50%);
-}
 
-#facebook.contact:hover{
-	filter:opacity(100%);
+.contact:hover {
+	filter:opacity(50%);
+	transition: filter .25s;
 }
 
 

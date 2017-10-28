@@ -5,10 +5,10 @@ $(document).ready(function() {
 	resetNet();
 	$(window).scroll(function () {
     //console.log($(window).scrollTop())
-    if ($(window).scrollTop() > 280) {
+    if ($(window).scrollTop() > 100) {
       $('#navBar').addClass('navFixed');
     }
-    if ($(window).scrollTop() < 281) {
+    if ($(window).scrollTop() <= 100) {
       $('#navBar').removeClass('navFixed');
 		}
 		});
