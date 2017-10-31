@@ -10,7 +10,7 @@ while (!(imageLink != null || imageLink.substring(imageLink.length - 4) == ".jpg
 }
 */
 var currImage = new Image();
-currImage.src = "mail.png";
+currImage.src = "realNet.png";
 
 canvas.width = 100;
 canvas.height = 100;
@@ -18,12 +18,11 @@ canvas.height = 100;
 
 ctx.drawImage(currImage, 0, 0, 100, 100);
 
-var imgd = ctx.getImageData(0, 0, 10, 100);
+
+var imgd = ctx.getImageData(0, 0, 100, 100);
 var pix = imgd.data;
 var newColor = {r:0, g:0, b:0, a:0};
 
-var imgdR = ctx.getImageData(90, 0, 10, 100);
-var pixR = imgdR.data;
 
 for (var i = 0, n = pix.length; i < n; i += 4) {
   var r = pix[i],
@@ -40,18 +39,6 @@ for (var i = 0, n = pix.length; i < n; i += 4) {
 
 
 
-for (var i = 0, n = pixR.length; i < n; i += 4) {
-  var r = pixR[i],
-    g = pixR[i+1],
-    b = pixR[i+2];
-    if ( r >= 230 && g >= 230 && b >= 230) {
-      pixR[i] = newColor.r;
-      pixR[i+1] = newColor.g;
-      pixR[i+2] = newColor.b;
-      pixR[i+3] = newColor.a;
-    }
-}
-
 
 ctx.putImageData(imgd, 0, 0);
-ctx.putImageData(imgdR, 90, 0);
+

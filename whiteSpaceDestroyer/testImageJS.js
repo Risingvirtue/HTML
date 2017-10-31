@@ -2,7 +2,7 @@ canvas = document.getElementById("canvas");
 ctx = canvas.getContext("2d");
 
 var imageLink = new Image();
-imageLink.src = "m1.png";
+imageLink.src = "leaf1.png";
 
 canvas.width = 1000;
 canvas.height = 1000;
