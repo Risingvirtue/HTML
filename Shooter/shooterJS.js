@@ -12,27 +12,28 @@ var x = 0,
 	speed = 2,
 	friction = 1;
 var mousePos = {x:0, y:0};
+var bullets = [];
+var mouseDown = false;
+var timeInterval = 300;
+var timeCounter = 0;
+let lastTime = 0;
+var ableToShoot = false;
 
-//setInterval(step, 1000/30);
-/*
-function step() {
-	
-	movement();
+
+function enemy(x, y) {
 	
 }
-function movement() {
-	ctx.clearRect(0,0, canvas.width, canvas.height);
-	ctx.save();
-	ctx.moveTo(x, y);
-	ctx.beginPath();
-	ctx.arc(x, y , 25, 0, Math.PI * 2);
-	ctx.closePath();
-	ctx.fill();
-	ctx.restore();
-}
-*/
 
-function update() {
+
+function update(time = 0) {
+	const deltaTime = time - lastTime;
+	timeCounter += deltaTime;
+	if (timeCounter > timeInterval) {
+		ableToShoot = true;
+		timeCounter = 0;
+	}
+	lastTime = time;
+	
 	requestAnimationFrame(update);
 	
 	if (keys[0]) {
@@ -83,11 +84,44 @@ function update() {
 	ctx.moveTo(x, y);
 	let diffX = mousePos.x - x;
 	let diffY = mousePos.y - y;
-	ctx.lineTo(x + diffX / 10, y + diffY / 10);
+	let a = currAngle();
+	
+	//console.log(angle *180/ Math.PI);
+	//console.log(Math.cos(angle), Math.sin(angle));
+	ctx.lineTo(50 * Math.cos(a) + x, 50 * Math.sin(a) + y);
+	ctx.lineWidth = 10;
 	ctx.stroke();
+	if (mouseDown && ableToShoot) {
+		bullets.push({angle:a, x: 50 * Math.cos(a) + x, y: 50 * Math.sin(a) + y});
+		ableToShoot = false;
+		timeCounter = 0;
+		}
+	var newBullets = [];
+	for (bullet of bullets) {
+		bullet.x += 10 * Math.cos(bullet.angle);
+		bullet.y += 10 * Math.sin(bullet.angle);
+		if (bullet.x > canvas.width || bullet.x < 0 || bullet.y > canvas.height || bullet.y < 0){
+			continue;
+		} 
+		ctx.moveTo(bullet.x, bullet.y);
+		ctx.arc(bullet.x, bullet.y, 10, 0, Math.PI * 2);
+		ctx.fill();
+		newBullets.push(bullet);
+	};
+	bullets = newBullets;
 	
 }
 update();
+
+function currAngle() {
+	let diffX = mousePos.x - x;
+	let diffY = mousePos.y - y;
+	let angle = Math.atan(diffY/ diffX);
+	if (diffX < 0) {
+		angle += Math.PI;
+	}
+	return angle;
+}
 /*
 document.onkeydown = checkKey;
 
@@ -145,9 +179,25 @@ document.body.addEventListener("keyup", function (e) {
 });
 
 
+document.body.addEventListener("mousedown", function (e) {
+	mouseDown = true;
+	//console.log(mousePos);
+	//let a = currAngle();
+	//bullets.push({angle:a, x: 50 * Math.cos(a) + x, y: 50 * Math.sin(a) + y});
+	//console.log(bullets[0]);
+	
+});
+
+document.body.addEventListener("mouseup", function (e) {
+	mouseDown = false;
+	
+});
+
 //track mouse movement from stackoverflow
 canvas.addEventListener('mousemove', function(evt) {
 	mousePos = getMousePos(canvas, evt);
+	
+	//bullet.push({angle:});
 }, false);
 
 function getMousePos(canvas, evt) {
